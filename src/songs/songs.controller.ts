@@ -12,6 +12,11 @@ export class SongsController {
     return this.songsService.create(createSongDto);
   }
 
+  @Get('longest')
+  getLongest(
+    @Query('top') top : string){
+      return this.songsService.getTopN(+top);
+  }
   // /songs?start=12&count=10
   @Get()
   findAll(
@@ -39,4 +44,5 @@ export class SongsController {
   remove(@Param('id') id: string) {
     return this.songsService.remove(+id);
   }
+
 }

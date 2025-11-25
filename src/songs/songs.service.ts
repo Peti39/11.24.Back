@@ -18,8 +18,13 @@ export class SongsService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} song`;
+    return this.db.song.findFirstOrThrow({
+      where: {id},
+      include:{albumid : true}
+    })
   }
+
+
 
   update(id: number, updateSongDto: UpdateSongDto) {
     return `This action updates a #${id} song`;
@@ -29,6 +34,15 @@ export class SongsService {
     return `This action removes a #${id} song`;
   }
 
+  getTopN(top: number) {
+    return this.db.song.findMany({
+      orderBy: {
+        length: 'desc'
+      },
+      take : top
+    })
+  }
+
   search(title:string){
     return this.db.song.findMany({
       where:{
@@ -36,6 +50,26 @@ export class SongsService {
           contains: title
         }
       }
+    })
+  }
+
+  getTopFavorited(){
+    return this.db.song.findMany({
+      orderBy:{
+        favoritedBy:{
+          _count: 'desc'
+        }
+      },
+      take: 10
+    })
+  }
+
+  getNewest(){
+    return this.db.song.findMany({
+      orderBy:{
+        createdAt : 'desc'
+      },
+      take: 10
     })
   }
 }

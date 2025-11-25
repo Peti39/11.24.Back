@@ -6,6 +6,8 @@ import { UpdateAlbumDto } from './dto/update-album.dto';
 
 // Lekérd
 // ID lekérd
+// - Összes zeneszám
+// - Az album öszz hosszát
 //Zeneszám hozzáad
 
 @Controller('albums')
@@ -23,8 +25,13 @@ export class AlbumsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.albumsService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const album = await this.albumsService.findOne(+id);
+    const lenght = await this.albumsService.getAlbumLenght(+id);
+    return{
+      ...album,
+      lenght,
+    }
   }
 
   //:albumid/:songid
@@ -33,6 +40,14 @@ export class AlbumsController {
     return this.albumsService.addSong(+albumid,+songid)
 
   }
+
+  @Delete(':albumid/removeSong/:songid')
+  removeSong(@Param('albumid') albumid: string, @Param('songid') songid: string){
+    return this.albumsService.removeSong(+albumid,+songid)
+
+  }
+
+  
 
 
   @Patch(':id')

@@ -17,9 +17,30 @@ export class AlbumsService {
   }
 
   findOne(id: number) {
-    return this.db.album.findMany({
+    /*return this.db.album.findMany({
       where: {id}
-    });
+    });*/
+    return this.db.album.findFirstOrThrow({
+      where: {id},
+      include : {
+        songs: {
+          omit:{
+            albumId: true
+          }
+        }
+      }
+    })
+  }
+
+  async getAlbumLenght(id: number): Promise<number | null>{
+    return (await this.db.song.aggregate({
+      _sum:{
+        length: true,
+      },
+      where:{
+        albumId: id,
+      }
+    }))._sum.length
   }
 
   addSong(albumid: number, songid : number){
@@ -28,6 +49,17 @@ export class AlbumsService {
       data:{
         songs:{
           connect:{id:songid},
+        },
+      },
+    });
+  }
+
+  removeSong(albumid: number, songid : number){
+    return this.db.album.update({
+      where : {id:albumid},
+      data:{
+        songs:{
+          disconnect:{id:songid},
         },
       },
     });
